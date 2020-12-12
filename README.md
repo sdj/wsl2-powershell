@@ -27,13 +27,30 @@ wsl -d DISTNAME
 
 ```powershell
 # check for uid 1000 in wsl dist
-wsl -d DISTNAME id 1000
+wsl.exe -d DISTNAME sh -c "id 1000"
 
 # check whether first user account exists and  prompt user to run setupuser.ps1 or something
-echo $?
+Write-Output $?
 
 ```
 
+ - `wsl.exe --import` doesn't set the default user to 1000 so the auto user provisioning should check if uid=1000 exists already and set it automatically, otherwise give user a way to create & provision a new user from scratch and set it as default automatically
+
+- Add export helper for compression e.g., `wsl --export dist - | 7z a -si dist.tar.xz`
+- Add import helper for compression e.g., `7z x -so dist.tar.xz | wsl --import -`
+- User provisioning should not require uid=1000, should be user-definable, declaractive (i.e., if setupuser.ps1 "username" username does not exist, create it and get that uid to set the wsl default user)
+
+- Test existence of distribution, to use as guard in other contexts. Would allow --force to automatically remove/recreate a distribution.
+
+```powershell
+wsl -d asdf true > $null
+There is no distribution with the supplied name.
+echo $?
+False
+wsl -d ub2004 true
+echo $?
+True
+```
 
 ## References
 
